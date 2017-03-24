@@ -2,6 +2,7 @@ package com.example.vyshalis.vol;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
                 editText = (EditText) findViewById(R.id.etxt);
                 final String test = editText.getText().toString();
                 final String url = "http://api.openweathermap.org/data/2.5/weather?zip=" + test + ",us&appid=5ce2dbcff5f7d451769448efe9671b1a&units=imperial";
+                Log.i("randomtext", url);
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
@@ -48,9 +51,11 @@ public class MainActivity extends AppCompatActivity {
                                     e.printStackTrace();
                                 }*/
 
-                                mTextView.setText(parseJSON(response)+"\n"+locationJSON(response));
+                                mTextView.setText(parseJSON(response)+"\n"+locationJSON(response)+"\n"+cordJSON(response)+"\n"+windJSON(response));
                                 //Toast.makeText(MainActivity.this, "Response"+response, Toast.LENGTH_SHORT).show();
                             }
+
+
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -85,4 +90,30 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){e.printStackTrace();}
         return result;
     }
-}
+    private String cordJSON(String response) {
+        String result="";
+        try{
+        JSONObject coord = (new JSONObject(response)).getJSONObject("coord");
+        int lon = coord.getInt("lon");
+        int lat = coord.getInt("lat");
+            result ="lon: "+lon+"\r\nlat: "+lat;
+
+        }catch (Exception e){e.printStackTrace();}
+        return result;}
+
+        private String windJSON(String response) {
+            String result="";
+            try{
+                JSONObject wind = (new JSONObject(response)).getJSONObject("wind");
+                int speed = wind.getInt("speed");
+                int degree = wind.getInt("degree");
+                int gust = wind.getInt("gust");
+
+                result ="speed: "+speed+"\r\ndegree: "+degree+"\r\ngust: "+gust;
+
+            }catch (Exception e){e.printStackTrace();}
+            return result;
+
+        }
+
+    }
